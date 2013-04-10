@@ -1,0 +1,15 @@
+E:\VS2010\Sudoku\Sudoku\bin\Debug\Sudoku.exe
+E:\VS2010\Sudoku\Sudoku\bin\Debug\Sudoku.pdb
+E:\VS2010\Sudoku\Sudoku\obj\x86\Debug\Sudoku.exe
+E:\VS2010\Sudoku\Sudoku\obj\x86\Debug\Sudoku.pdb
+E:\VS2010\Sudoku\Sudoku\obj\x86\Debug\Sudoku.csprojResolveAssemblyReference.cache
+E:\VS2010\123\Sudoku\Sudoku\obj\x86\Debug\Sudoku.exe
+E:\VS2010\123\Sudoku\Sudoku\obj\x86\Debug\Sudoku.pdb
+E:\VS2010\123\Sudoku\Sudoku\bin\Debug\Sudoku.exe
+E:\VS2010\123\Sudoku\Sudoku\bin\Debug\Sudoku.pdb
+E:\VS2010\123\Sudoku\Sudoku\obj\x86\Debug\Sudoku.csprojResolveAssemblyReference.cache
+E:\VS2010\123\ShanhaiSudoku\Sudoku\obj\x86\Debug\Sudoku.exe
+E:\VS2010\123\ShanhaiSudoku\Sudoku\obj\x86\Debug\Sudoku.pdb
+E:\VS2010\123\ShanhaiSudoku\Sudoku\bin\Debug\Sudoku.exe
+E:\VS2010\123\ShanhaiSudoku\Sudoku\bin\Debug\Sudoku.pdb
+E:\VS2010\123\ShanhaiSudoku\Sudoku\obj\x86\Debug\Sudoku.csprojResolveAssemblyReference.cache
