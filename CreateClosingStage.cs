@@ -19,6 +19,7 @@ namespace Sudoku
 
         int times = 0;      //Debug
         int nTimes = 0;     //Debug
+        int functionTimes = 0;  //Debug
         public CreateClosingStage(int n)
         {
             _matrixBaseNum = n;
@@ -71,6 +72,7 @@ namespace Sudoku
             }
 
             #endregion
+           
         }
 
         /// <summary>
@@ -84,6 +86,8 @@ namespace Sudoku
                 {
                     CreateRandomValueToItem(rowIndex, colIndex);
                     Console.WriteLine("Times is " + nTimes);
+                    Console.WriteLine("Function Call Times" + functionTimes.ToString());
+
                     nTimes += 1;
                 }
             }    
@@ -98,6 +102,7 @@ namespace Sudoku
         {
             _randomValue = GetRandomValueWithList(_colAvailibleList[colIndex]);
 
+            //if(false)
             if (!CheckValue(rowIndex, colIndex))
             {
                 CreateRandomValueToItem(rowIndex, colIndex);
@@ -134,33 +139,42 @@ namespace Sudoku
         /// <returns></returns>
         private bool CheckValue(int rowIndex, int colIndex)
         {
-            //CheckInRow
-            for (int i = 0; i < colIndex; i++)
-            {
-                if (_sudokuMatrix[rowIndex][i] == _randomValue)
-                    return false;
-            }
+            //if (rowIndex==4&&colIndex==4)
+            //{
 
-            //CheckInCol
-            for (int i = 0; i < rowIndex; i++)
-            {
-                if (_sudokuMatrix[i][colIndex] == _randomValue)
-                    return false;
-            }
+            //}
 
+            ////CheckInRow
+            //for (int i = 0; i < colIndex; i++)
+            //{
+            //    functionTimes++;
+            //    if (_sudokuMatrix[rowIndex][i] == _randomValue)
+            //        return false;
+            //}
+
+            ////CheckInCol
+            //for (int i = 0; i < rowIndex; i++)
+            //{
+            //    functionTimes++;
+            //    if (_sudokuMatrix[i][colIndex] == _randomValue)
+            //        return false;
+            //}
+         
             //CheckInBlock
-            int num = Convert.ToInt32(Math.Sqrt(_matrixBaseNum));   
+            int num = Convert.ToInt32(Math.Sqrt(_matrixBaseNum));
 
             int rowInBlock = rowIndex % num;    //元素所在宫中的行索引
-            int blockColIndex = colIndex / num; //元素所在宫，在整个Matrix中的列索引
+            int blockColIndex = colIndex / num; //元素所在的宫，在整个Matrix中的列索引
 
             for (int i = 0; i < rowInBlock; i++)
             {
+                functionTimes++;
                 if (rowInBlock != 0)
                 {
-                    for (int j = blockColIndex*num; j < num; j++)
+                    for (int j = blockColIndex * num; j < num; j++)
                     {
-                        if (_sudokuMatrix[rowIndex-i][j]==_randomValue)
+                        //if (_sudokuMatrix[rowIndex - i][j] == _randomValue)
+                        if (_sudokuMatrix[i][j] == _randomValue) 
                             return false;
                     }
                 }
