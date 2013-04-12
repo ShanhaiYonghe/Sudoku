@@ -8,18 +8,24 @@ namespace Sudoku
     public class CreateClosingStage
     {
         private int _matrixBaseNum;
-        
+
         public int[][] _sudokuMatrix;
-        //public List<int>[] _rowAvailibleList;
         public List<int>[] _colAvailibleList;
         public List<int>[] _blockAvailibleList;
 
         private Random _random;
         private int _randomValue;
 
-        int times = 0;      //Debug
-        int nTimes = 0;     //Debug
-        int functionTimes = 0;  //Debug
+        int createRandomValueTimes = 0;      //Debug
+        int createItemTimes = 0;     //Debug
+        int checkFunctionCallTimes = 0;  //Debug
+        int recursionTimes = 0;  //Debug
+
+        private int[][] _sudokuMatrixRollBack;
+        private List<int>[] _colAvailibleListRollBack;
+        private List<int>[] _blockAvailibleListRollBack;
+
+
         public CreateClosingStage(int n)
         {
             _matrixBaseNum = n;
@@ -38,10 +44,13 @@ namespace Sudoku
             #region CreateMatrix
 
             _sudokuMatrix = new int[_matrixBaseNum][];
+            _sudokuMatrixRollBack = new int[_matrixBaseNum][];
+
             for (int i = 0; i < _matrixBaseNum; i++)
             {
                 int[] rowArr = new int[_matrixBaseNum];
                 _sudokuMatrix[i] = rowArr;
+                _sudokuMatrixRollBack[i] = rowArr;
             }
 
             #endregion
@@ -52,27 +61,57 @@ namespace Sudoku
             for (int i = 0; i < _matrixBaseNum; i++)
                 baseArr[i] = i + 1;
 
-            //_rowAvailibleList = new List<int>[_matrixBaseNum];
             _colAvailibleList = new List<int>[_matrixBaseNum];
             _blockAvailibleList = new List<int>[_matrixBaseNum];
 
+            _colAvailibleListRollBack = new List<int>[_matrixBaseNum];
+            _blockAvailibleListRollBack = new List<int>[_matrixBaseNum];
+
             for (int i = 0; i < _matrixBaseNum; i++)
             {
-                //int[] newRowArr = new int[_matrixBaseNum];
                 int[] newColArr = new int[_matrixBaseNum];
                 int[] newBlockArr = new int[_matrixBaseNum];
 
-                //baseArr.CopyTo(newRowArr, 0);
                 baseArr.CopyTo(newColArr, 0);
                 baseArr.CopyTo(newBlockArr, 0);
 
-                //_rowAvailibleList[i] = new List<int>(newRowArr);
                 _colAvailibleList[i] = new List<int>(newColArr);
                 _blockAvailibleList[i] = new List<int>(newBlockArr);
+
+                _colAvailibleListRollBack[i] = new List<int>(newColArr);
+                _blockAvailibleListRollBack[i] = new List<int>(newBlockArr);
             }
 
             #endregion
-           
+
+            DeepCopy(_sudokuMatrixRollBack, _sudokuMatrix);
+            DeepCopy(_colAvailibleListRollBack, _colAvailibleList);
+            DeepCopy(_blockAvailibleListRollBack, _blockAvailibleList);
+        }
+
+        public void DeepCopy(int[][] param, int[][] paramCloneSource)
+        {
+            for (int row = 0; row < param.Length; row++)
+            {
+                for (int col = 0; col < param[row].Length; col++)
+                {
+                    paramCloneSource[row][col] = param[row][col];
+                }
+            }
+        }
+
+        //供回滚使用，所以param[i].Count<paramCloneSource[i].Count
+        public void DeepCopy(List<int>[] param, List<int>[] paramCloneSource)
+        {
+            for (int i = 0; i < param.Length; i++)
+                param[i] = new List<int>();
+            for (int i = 0; i < paramCloneSource.Length; i++)
+            {
+                foreach (int item in paramCloneSource[i])
+                {
+                    param[i].Add(item);
+                }
+            }
         }
 
         /// <summary>
@@ -85,12 +124,19 @@ namespace Sudoku
                 for (int colIndex = 0; colIndex < _matrixBaseNum; colIndex++)
                 {
                     CreateRandomValueToItem(rowIndex, colIndex);
-                    Console.WriteLine("Times is " + nTimes);
-                    Console.WriteLine("Function Call Times" + functionTimes.ToString());
+                   
+                    Console.WriteLine("CreateItemIndex is " + createItemTimes);
+                    Console.WriteLine("CheckFunction CallTimes" + checkFunctionCallTimes.ToString());
+                    Console.WriteLine();
 
-                    nTimes += 1;
+                    recursionTimes = 0;
+                    createItemTimes += 1;
                 }
-            }    
+
+                DeepCopy(_sudokuMatrixRollBack, _sudokuMatrix);
+                DeepCopy(_colAvailibleListRollBack, _colAvailibleList);
+                DeepCopy(_blockAvailibleListRollBack, _blockAvailibleList);
+            }
         }
 
         /// <summary>
@@ -102,21 +148,51 @@ namespace Sudoku
         {
             _randomValue = GetRandomValueWithList(_colAvailibleList[colIndex]);
 
-            //if(false)
             if (!CheckValue(rowIndex, colIndex))
             {
+
+                #region Bug:Recursion Times Too Much
+                //Bug Instance:
+                //  795 824 136
+                //  381 976 524 
+                //  462 153 798 
+                //  826 319 457 
+                //  579 682 310 
+                //  rowIndex=4  colIndex=8  目标随机数为4
+                //  _colAvailibleList[8]={1,2,3,5,9} 
+                #endregion
+               
+                if (recursionTimes >= 50)   //At last 30 Times
+                {
+                    DeepCopy(_sudokuMatrix, _sudokuMatrixRollBack);
+                    DeepCopy(_colAvailibleList, _colAvailibleListRollBack);
+                    DeepCopy(_blockAvailibleList, _blockAvailibleListRollBack);
+
+                    //清除已生成的，与这个元素同行的元素，并重新生成随机值
+                    for (int i = 0; i < colIndex; i++)
+                    {
+                        CreateRandomValueToItem(rowIndex, i);
+                    }
+                }
+
+                if (recursionTimes>234)
+                {
+                    return;
+                }
+
+                Console.WriteLine("RecursionTimes：" + (recursionTimes++) + "    RandomValue：" + _randomValue);
                 CreateRandomValueToItem(rowIndex, colIndex);
             }
-            else 
+            else
             {
                 _sudokuMatrix[rowIndex][colIndex] = _randomValue;
                 _colAvailibleList[colIndex].Remove(_randomValue);
 
-                //Console.WriteLine("-----------------Row:" + rowIndex + "  Col:" + colIndex + 
-                //                    "  Value:" + _sudokuMatrix[rowIndex][colIndex]);
-                Console.WriteLine("Random Times of  Row:" + rowIndex + " Col:" + colIndex + " is " + times.ToString());
-                //Console.WriteLine("");
-                times = 0;
+
+                Console.WriteLine("CreateRandomValueTimes of  Row:" + rowIndex + " Col:" + colIndex +
+                                        " is " + createRandomValueTimes.ToString()
+                                        +"   RandomValue is" +_randomValue);
+                createRandomValueTimes = 0;
             }
         }
 
@@ -127,7 +203,7 @@ namespace Sudoku
         /// <returns></returns>
         private int GetRandomValueWithList(List<int> list)
         {
-            times += 1;
+            createRandomValueTimes += 1;
             return list.ToArray()[_random.Next(0, list.Count)];
         }
 
@@ -136,50 +212,54 @@ namespace Sudoku
         /// </summary>
         /// <param name="rowIndex"></param>
         /// <param name="colIndex"></param>
-        /// <returns></returns>
+        /// <returns>随机值可用返回true,不可用返回false</returns>
         private bool CheckValue(int rowIndex, int colIndex)
         {
-            //if (rowIndex==4&&colIndex==4)
-            //{
+            checkFunctionCallTimes++;
 
-            //}
+            //CheckInRow
+            for (int i = 0; i < colIndex; i++)
+            {
+                
+                if (_sudokuMatrix[rowIndex][i] == _randomValue)
+                    return false;
+            }
 
-            ////CheckInRow
-            //for (int i = 0; i < colIndex; i++)
-            //{
-            //    functionTimes++;
-            //    if (_sudokuMatrix[rowIndex][i] == _randomValue)
-            //        return false;
-            //}
+            //CheckInCol
+            for (int i = 0; i < rowIndex; i++)
+            {
+                if (_sudokuMatrix[i][colIndex] == _randomValue)
+                    return false;
+            }
 
-            ////CheckInCol
-            //for (int i = 0; i < rowIndex; i++)
-            //{
-            //    functionTimes++;
-            //    if (_sudokuMatrix[i][colIndex] == _randomValue)
-            //        return false;
-            //}
-         
             //CheckInBlock
             int num = Convert.ToInt32(Math.Sqrt(_matrixBaseNum));
 
             int rowInBlock = rowIndex % num;    //元素所在宫中的行索引
+            int blockRowIndex = rowIndex / num;   //元素所在的宫，在整个Matrix中的含索引
             int blockColIndex = colIndex / num; //元素所在的宫，在整个Matrix中的列索引
 
             for (int i = 0; i < rowInBlock; i++)
             {
-                functionTimes++;
                 if (rowInBlock != 0)
                 {
-                    for (int j = blockColIndex * num; j < num; j++)
+                    for (int j = blockColIndex * num; j < blockColIndex * num + num; j++)
                     {
-                        //if (_sudokuMatrix[rowIndex - i][j] == _randomValue)
-                        if (_sudokuMatrix[i][j] == _randomValue) 
+                        if (_sudokuMatrix[blockRowIndex * num + i][j] == _randomValue)
                             return false;
                     }
                 }
             }
+
             return true;
         }
+    }
+
+
+
+    public class DeepCopy<T>
+    {
+
+     
     }
 }
