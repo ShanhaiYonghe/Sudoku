@@ -56,7 +56,7 @@ namespace Sudoku
             #region Display Sudoku
 
             int n = 9;
-            CreateClosingStage ccs = new CreateClosingStage(n);
+            GenerateClosingStage ccs = new GenerateClosingStage(n);
 
             int index = 0;
             for (int row = 0; row < n; row++, index = 0)

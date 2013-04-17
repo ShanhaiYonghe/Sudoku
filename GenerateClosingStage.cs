@@ -5,28 +5,30 @@ using System.Text;
 
 namespace Sudoku
 {
-    public class CreateClosingStage
+    public class GenerateClosingStage
     {
+        #region 字段和属性
+
         private int _matrixBaseNum;
+        private Random _random;
+        private int _randomValue;
 
         public int[][] _sudokuMatrix;
         public List<int>[] _colAvailibleList;
         public List<int>[] _blockAvailibleList;
 
-        private Random _random;
-        private int _randomValue;
+        private int[][] _sudokuMatrixRollBack;
+        private List<int>[] _colAvailibleListRollBack;
+        private List<int>[] _blockAvailibleListRollBack;
 
         int createRandomValueTimes = 0;      //Debug
         int createItemTimes = 0;     //Debug
         int checkFunctionCallTimes = 0;  //Debug
         int recursionTimes = 0;  //Debug
 
-        private int[][] _sudokuMatrixRollBack;
-        private List<int>[] _colAvailibleListRollBack;
-        private List<int>[] _blockAvailibleListRollBack;
-
-
-        public CreateClosingStage(int n)
+        #endregion
+        
+        public GenerateClosingStage(int n)
         {
             _matrixBaseNum = n;
             _random = new Random();
@@ -89,7 +91,7 @@ namespace Sudoku
             DeepCopy(_blockAvailibleListRollBack, _blockAvailibleList);
         }
 
-        public void DeepCopy(int[][] param, int[][] paramCloneSource)
+        private void DeepCopy(int[][] param, int[][] paramCloneSource)
         {
             for (int row = 0; row < param.Length; row++)
             {
@@ -101,7 +103,7 @@ namespace Sudoku
         }
 
         //供回滚使用，所以param[i].Count<paramCloneSource[i].Count
-        public void DeepCopy(List<int>[] param, List<int>[] paramCloneSource)
+        private void DeepCopy(List<int>[] param, List<int>[] paramCloneSource)
         {
             for (int i = 0; i < param.Length; i++)
                 param[i] = new List<int>();
@@ -150,7 +152,6 @@ namespace Sudoku
 
             if (!CheckValue(rowIndex, colIndex))
             {
-
                 #region Bug:Recursion Times Too Much
                 //Bug Instance:
                 //  795 824 136
@@ -161,7 +162,12 @@ namespace Sudoku
                 //  rowIndex=4  colIndex=8  目标随机数为4
                 //  _colAvailibleList[8]={1,2,3,5,9} 
                 #endregion
-               
+
+                if (recursionTimes > 234)
+                {
+                    //return;
+                }
+
                 if (recursionTimes >= 50)   //At last 30 Times
                 {
                     DeepCopy(_sudokuMatrix, _sudokuMatrixRollBack);
@@ -175,12 +181,9 @@ namespace Sudoku
                     }
                 }
 
-                if (recursionTimes>234)
-                {
-                    return;
-                }
-
-                Console.WriteLine("RecursionTimes：" + (recursionTimes++) + "    RandomValue：" + _randomValue);
+                recursionTimes++;
+                //Console.WriteLine("RecursionTimes：" + recursionTimes + "    RandomValue：" + _randomValue);
+                
                 CreateRandomValueToItem(rowIndex, colIndex);
             }
             else
@@ -188,10 +191,9 @@ namespace Sudoku
                 _sudokuMatrix[rowIndex][colIndex] = _randomValue;
                 _colAvailibleList[colIndex].Remove(_randomValue);
 
-
-                Console.WriteLine("CreateRandomValueTimes of  Row:" + rowIndex + " Col:" + colIndex +
-                                        " is " + createRandomValueTimes.ToString()
-                                        +"   RandomValue is" +_randomValue);
+                //Console.WriteLine("CreateRandomValueTimes of  Row:" + rowIndex + " Col:" + colIndex +
+                //                        " is " + createRandomValueTimes.ToString()
+                //                        + "   RandomValue is" + _randomValue);
                 createRandomValueTimes = 0;
             }
         }
@@ -250,16 +252,16 @@ namespace Sudoku
                     }
                 }
             }
-
             return true;
         }
-    }
 
-
-
-    public class DeepCopy<T>
-    {
-
-     
+        /// <summary>
+        /// 获取一个数独终盘
+        /// </summary>
+        /// <returns></returns>
+        public int[][] GetSudokuMatrix()
+        {
+            return _sudokuMatrix;
+        }
     }
 }
