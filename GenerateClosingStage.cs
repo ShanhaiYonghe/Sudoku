@@ -126,10 +126,10 @@ namespace Sudoku
                 for (int colIndex = 0; colIndex < _matrixBaseNum; colIndex++)
                 {
                     CreateRandomValueToItem(rowIndex, colIndex);
-                   
-                    Console.WriteLine("CreateItemIndex is " + createItemTimes);
-                    Console.WriteLine("CheckFunction CallTimes" + checkFunctionCallTimes.ToString());
-                    Console.WriteLine();
+
+                    //Console.WriteLine("CreateItemIndex is " + createItemTimes);
+                    //Console.WriteLine("CheckFunction CallTimes" + checkFunctionCallTimes.ToString());
+                    //Console.WriteLine();
 
                     recursionTimes = 0;
                     createItemTimes += 1;
@@ -152,7 +152,7 @@ namespace Sudoku
 
             if (!CheckValue(rowIndex, colIndex))
             {
-                #region Bug:Recursion Times Too Much
+                #region Bug:Recursion Times Too Much!!!Obsolete(消除CreateRandomValueToMatrix方法中的CW即可)
                 //Bug Instance:
                 //  795 824 136
                 //  381 976 524 
