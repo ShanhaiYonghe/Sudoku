@@ -70,6 +70,7 @@ namespace Sudoku
                     Console.Write(ccs._sudokuMatrix[row][col].ToString());
                 }
             }
+            Console.WriteLine();
             Console.WriteLine("End");
 
             #endregion
@@ -90,9 +91,17 @@ namespace Sudoku
                 {
                     if (index == 0)
                         Console.WriteLine();
-                    Console.Write(_sudokuMatrixRollBack[row][col].ToString());
+                    if (_isHoleMatrix[row][col]!=true)
+                    {
+                        Console.Write(_sudokuMatrixRollBack[row][col].ToString());
+                    }
+                    else
+                    {
+                        Console.Write(0);
+                    }
                 }
             }
+            Console.WriteLine();
             Console.WriteLine("End");
 
             #endregion
@@ -113,9 +122,9 @@ namespace Sudoku
         private void CreateIsHoleMatrix()
         {
             _isHoleMatrix = new bool[_matrixNum][];
-            var arr = new bool[_matrixNum];
             for (int i = 0; i < _matrixNum; i++)
             {
+                var arr = new bool[_matrixNum];
                 _isHoleMatrix[i] = arr;
             }
         }
@@ -128,7 +137,10 @@ namespace Sudoku
             for (int i = 0; i < _matrixNum * _matrixNum - _prompt; i++)
             {
                 DigHole();
-                Console.WriteLine("DigHole Times: "+i);
+                if (i>45)
+                {
+                    Console.WriteLine("DigHole Times: " + i);
+                }
             }
         }
 

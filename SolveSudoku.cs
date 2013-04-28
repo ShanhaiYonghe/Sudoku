@@ -38,9 +38,9 @@ namespace Sudoku
             #region CreateSudokuMatrix
 
             _sudokuMatrix =new int[_sudokuMatrixNum][];
-            int[] intArr = new int[_sudokuMatrixNum];
             for (int i = 0; i < _sudokuMatrixNum; i++)
             {
+                int[] intArr = new int[_sudokuMatrixNum];
                 _sudokuMatrix[i] = intArr;
             }
             DeepCopy(_sudokuMatrix,sudoku.SudokuMatrix);
@@ -49,9 +49,9 @@ namespace Sudoku
             #region CreateIsHoleMatrix
 
             _isHoleMatrix=new bool[_sudokuMatrixNum][];
-            bool[] boolArr = new bool[_sudokuMatrixNum];
             for (int i = 0; i < _sudokuMatrixNum; i++)
             {
+                bool[] boolArr = new bool[_sudokuMatrixNum];
                 _isHoleMatrix[i] = boolArr;
             }
             DeepCopy(_isHoleMatrix, sudoku.IsHoleMatrix);

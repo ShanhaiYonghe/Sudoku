@@ -72,6 +72,11 @@ namespace Sudoku
             #endregion
 
             Sudoku sudoku = new Sudoku();
+
+
+            Console.WriteLine("Waiting to Read");
+
+
             Console.Read();
         }
     }
