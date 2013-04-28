@@ -22,13 +22,15 @@ namespace Sudoku
 
         public List<int> ProbableValues
         {
-            get;
-            set;
+            get { return _probableValues; }
+            set { _probableValues = value; }
         }
 
         public Hole(int rowIndex, int colIndex)
         {
-            
+            _rowIndex = rowIndex;
+            _colIndex = colIndex;
+            _probableValues = new List<int>();
         }
     }
 }

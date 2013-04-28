@@ -55,23 +55,23 @@ namespace Sudoku
 
             #region Display Sudoku
 
-            int n = 9;
-            GenerateClosingStage ccs = new GenerateClosingStage(n);
+            //int n = 9;
+            //GenerateClosingStage ccs = new GenerateClosingStage(n);
 
-            int index = 0;
-            for (int row = 0; row < n; row++, index = 0)
-            {
-                for (int col = 0; col < n; col++, index++)
-                {
-                    if (index == 0)
-                        Console.WriteLine();
-                    Console.Write(ccs._sudokuMatrix[row][col].ToString());
-                }
-            }
+            //int index = 0;
+            //for (int row = 0; row < n; row++, index = 0)
+            //{
+            //    for (int col = 0; col < n; col++, index++)
+            //    {
+            //        if (index == 0)
+            //            Console.WriteLine();
+            //        Console.Write(ccs._sudokuMatrix[row][col].ToString());
+            //    }
+            //}
 
             #endregion
 
-
+            Sudoku sudoku = new Sudoku();
             Console.Read();
         }
     }

@@ -67,7 +67,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="GenerateSudoku.cs" />
     <Compile Include="SolveSudoku.cs" />
     <Compile Include="Sudoku.cs" />
   </ItemGroup>
