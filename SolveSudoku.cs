@@ -10,10 +10,8 @@ namespace Sudoku
     /// </summary>
     public class SolveSudoku
     {
-        //private int[][] _sudokuMatrix;
-        //private bool[][] _isHoleMatrix;
-
-        //private Sudoku _sudoku;
+         #region 字段和属性
+        
         private List<Hole> _holeList;
         private bool _sudokuIsSolved;
         private List<Hole> _holeWithOneValue;
@@ -21,14 +19,12 @@ namespace Sudoku
         private int _sudokuMatrixNum;
         private int[][] _sudokuMatrix;
         private bool[][] _isHoleMatrix;
-
-
         public bool SudokuIsSolved
         {
             get { return _sudokuIsSolved; }
         }
 
-        private int _removeTimes;
+         #endregion 
 
         public SolveSudoku(Sudoku sudoku)
         {
@@ -57,8 +53,6 @@ namespace Sudoku
             DeepCopy(_isHoleMatrix, sudoku.IsHoleMatrix);
             #endregion
 
-            //_sudoku = sudoku;
-
             _sudokuIsSolved = false;
             _holeWithOneValue = new List<Hole>();
 
@@ -66,9 +60,10 @@ namespace Sudoku
             AnalysisHoles();
             Solve();
         }
-
        
-        //获取所有洞
+        /// <summary>
+        /// 获取数独中所有洞
+        /// </summary>
         private void GetHoles()
         {
             for (int row = 0; row < _sudokuMatrixNum; row++)
@@ -80,18 +75,14 @@ namespace Sudoku
                         Hole hole = new Hole(row, col);
                         for (int i = 0; i < _sudokuMatrixNum; i++)
                             hole.ProbableValues.Add(i + 1);
-
+                       
                         _holeList.Add(hole);
                     }
                 }
             }
-            //foreach (var item in _holeList)
-            //{
-            //    Console.WriteLine("Row:"+item.RowIndex+"   Col:"+item.ColIndex);
-            //}
         }
 
-        //分析所有洞的可能值，
+        //分析洞的可能值，缩减范围
         private void AnalysisHoles()
         {
             foreach (Hole hole in _holeList)
@@ -142,148 +133,26 @@ namespace Sudoku
             
         }
 
-        //解决思路：缩减范围，移除单值洞
+        //解决思路：缩减每个洞的可能值范围，移除单值洞
         private void Solve()
         {
-            while (!_sudokuIsSolved)
+            int recursionDepth = 0;
+            while (!_sudokuIsSolved && recursionDepth<50)
             {
                 if (_holeList.Count>0)
                 {
                     RemoveHole();
                     AnalysisHoles();
+                    Console.WriteLine("解决数独，递归次数:"+recursionDepth++);
                 }
             }
         }
-
-        //当修改一个洞的可能值时（包含确定洞值情况），计算对相关洞的可能值影响
-        private void CalcRelatedHole(Hole hole)
-        {
-            int value = hole.ProbableValues.ToArray()[0];
-          
-            #region Old
-
-            #region Row
-            
-            foreach (Hole item in _holeList)
-            {
-                if (item.RowIndex == hole.RowIndex && item.ProbableValues.Contains(value))
-                {
-                    item.ProbableValues.Remove(value);
-                    CalcRelatedHole(item);
-                }
-            }
-
-            #endregion
-
-            #region Col
-
-            foreach (Hole item in _holeList)
-            {
-                if (item.ColIndex == hole.ColIndex && item.ProbableValues.Contains(value))
-                {
-                    item.ProbableValues.Remove(value);
-                    CalcRelatedHole(item);
-                }
-            }
-
-            #endregion
-
-            #region Block
-
-            int num = Convert.ToInt32(Math.Sqrt(_sudokuMatrixNum));
-            int blockRowIndex = hole.RowIndex / num;
-            int blockColIndex = hole.ColIndex / num;
-
-            foreach (Hole item in _holeList)
-            {
-                if (item.RowIndex >= blockRowIndex * num &&
-                    item.RowIndex < num + blockRowIndex * num &&
-                    item.ColIndex >= blockRowIndex * num &&
-                    item.ColIndex < num + blockColIndex * num)
-                {
-                    if (item.ProbableValues.Contains(value))
-                    {
-                        item.ProbableValues.Remove(value);
-                        CalcRelatedHole(item);
-                    }
-                }
-            }
-
-            #endregion
-
-            #endregion
-
-            #region New
-
-            #region Row
-
-            //for (int col = 0; col < _sudokuMatrixNum; col++)
-            //{
-            //    if (_isHoleMatrix[hole.RowIndex][col] == true)
-            //    {
-            //        foreach (Hole item in _holeList)
-            //        {
-            //            if (item.RowIndex == hole.RowIndex &&
-            //                        item.ColIndex == col &&
-            //                        item.ProbableValues.Contains(value))
-            //            {
-            //                item.ProbableValues.Remove(value);
-            //            }
-            //        }
-            //    }
-            //}
-
-            #endregion
-
-            #region Col
-
-            //for (int row = 0; row < _sudokuMatrixNum; row++)
-            //{
-            //    if (_isHoleMatrix[row][hole.ColIndex]==true)
-            //    {
-            //        foreach (Hole item in _holeList)
-            //        {
-            //            if (item.RowIndex == hole.RowIndex &&
-            //                        item.ColIndex == row &&
-            //                        item.ProbableValues.Contains(value))
-            //            {
-            //                item.ProbableValues.Remove(value);
-
-            //            }
-            //        }
-            //    }
-            //}
-
-            #endregion
-
-            #region Block
-
-            //int num = Convert.ToInt32(Math.Sqrt(_sudokuMatrixNum));
-            //int blockRowIndex = hole.RowIndex / num;
-            //int blockColIndex = hole.ColIndex / num;
-
-            //foreach (Hole item in _holeList)
-            //{
-            //    if (item.RowIndex >= blockRowIndex * num &&
-            //        item.RowIndex < num + blockRowIndex * num &&
-            //        item.ColIndex >= blockRowIndex * num &&
-            //        item.ColIndex < num + blockColIndex * num)
-            //    {
-            //        if (item.ProbableValues.Contains(value))
-            //            item.ProbableValues.Remove(value);
-            //    }
-            //}
-
-            #endregion
-            #endregion
-
-            RemoveHole();
-        }
-
-        //如果洞的可能值单一，用此值填补洞，消除此洞
+        
+        /// <summary>
+        /// 如果洞的可能值单一，用此值填补洞，消除此洞
+        /// </summary>
         private void RemoveHole()
         {
-            _removeTimes = 0;
             foreach (Hole hole in _holeList)
             {
                 if (hole.ProbableValues.Count == 1)
@@ -298,7 +167,6 @@ namespace Sudoku
                     _sudokuMatrix[item.RowIndex][item.ColIndex] = value;
                     _isHoleMatrix[item.RowIndex][item.ColIndex] = false;
                     _holeList.Remove(item);
-                    //Console.WriteLine("RemoveTimes:" + (_removeTimes++));
                     if (_holeList.Count == 0)
                         _sudokuIsSolved = true;
                 }   
@@ -320,6 +188,7 @@ namespace Sudoku
                 }
             }
         }
+
         /// <summary>
         /// 深拷贝IsHoleMatrix
         /// </summary>

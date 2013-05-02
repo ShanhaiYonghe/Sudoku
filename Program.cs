@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Sudoku
 {
@@ -53,30 +54,11 @@ namespace Sudoku
             //}
             #endregion
 
-            #region Display Sudoku
-
-            //int n = 9;
-            //GenerateClosingStage ccs = new GenerateClosingStage(n);
-
-            //int index = 0;
-            //for (int row = 0; row < n; row++, index = 0)
-            //{
-            //    for (int col = 0; col < n; col++, index++)
-            //    {
-            //        if (index == 0)
-            //            Console.WriteLine();
-            //        Console.Write(ccs._sudokuMatrix[row][col].ToString());
-            //    }
-            //}
-
-            #endregion
-
+            //Console.WriteLine("Sleep Thread");
+            //Thread.Sleep(5000);
             Sudoku sudoku = new Sudoku();
 
-
             Console.WriteLine("Waiting to Read");
-
-
             Console.Read();
         }
     }

@@ -7,23 +7,18 @@ namespace Sudoku
 {
     public class Sudoku
     {
-        private int _matrixNum;
-        private int[][] _sudokuMatrix;
+        private int _matrixNum;     //数独大小：n*n
+        private int[][] _sudokuMatrix;  
         private int[][] _sudokuMatrixRollBack;
         private int _prompt;    //提示数字的个数，即总数减去挖洞数
-
-
-        private bool[][] _isHoleMatrix;
-        private SolveSudoku _solveSudoku;
+        private bool[][] _isHoleMatrix;     
+        private SolveSudoku _solveSudoku;   
         private Random _random;
 
 
         public int MatrixNum
         {
-            get
-            {
-                return _matrixNum;
-            }
+            get{ return _matrixNum;}
         }
         public int[][] SudokuMatrix
         {
@@ -39,13 +34,15 @@ namespace Sudoku
         {
             set
             {
-                if (value>=17)
+                if (value>=17)  //提示数大于17的数独才会有唯一解
                 {
                     _prompt = value;
                     Init();
                 }
             }
         }
+
+        int debugNum = 0;
 
         public Sudoku()
         {
@@ -55,36 +52,14 @@ namespace Sudoku
             CreateSudokuMatrix();
             CreateIsHoleMatrix();
 
-            GenerateClosingStage ccs = new GenerateClosingStage(_matrixNum);
+            
 
-            #region Display ClosingStage
-             
-            int index = 0;
-            Console.WriteLine("Display ClosingStage");
-            for (int row = 0; row < _matrixNum; row++, index = 0)
-            {
-                for (int col = 0; col < _matrixNum; col++, index++)
-                {
-                    if (index == 0)
-                        Console.WriteLine();
-                    Console.Write(ccs._sudokuMatrix[row][col].ToString());
-                }
-            }
-            Console.WriteLine();
-            Console.WriteLine("End");
-
-            #endregion
-
-            DeepCopy(_sudokuMatrix, ccs.GetSudokuMatrix());
-            DeepCopy(_sudokuMatrixRollBack, ccs.GetSudokuMatrix());
-
-            ccs = null;
             Init();
 
             #region Display SudokuMatrix
 
-            index = 0;
-            Console.WriteLine("Display SudokuMatrix");
+            int index = 0;
+            //Console.WriteLine("Display SudokuMatrix");
             for (int row = 0; row < _matrixNum; row++, index = 0)
             {
                 for (int col = 0; col < _matrixNum; col++, index++)
@@ -102,9 +77,34 @@ namespace Sudoku
                 }
             }
             Console.WriteLine();
-            Console.WriteLine("End");
+            //Console.WriteLine("End");
 
             #endregion
+        }
+
+        private void CreateRandomClosingStage()
+        {
+            GenerateClosingStage ccs = new GenerateClosingStage(_matrixNum);
+
+            #region Display ClosingStage
+
+            int index = 0;
+            //Console.WriteLine("Display ClosingStage");
+            for (int row = 0; row < _matrixNum; row++, index = 0)
+            {
+                for (int col = 0; col < _matrixNum; col++, index++)
+                {
+                    if (index == 0)
+                        Console.WriteLine();
+                    Console.Write(ccs._sudokuMatrix[row][col].ToString());
+                }
+            }
+            Console.WriteLine();
+
+            #endregion
+
+            DeepCopy(_sudokuMatrix, ccs.GetSudokuMatrix());
+            DeepCopy(_sudokuMatrixRollBack, ccs.GetSudokuMatrix());
         }
 
         private void CreateSudokuMatrix()
@@ -134,10 +134,11 @@ namespace Sudoku
         /// </summary>
         private void Init()
         {
+            CreateRandomClosingStage();
             for (int i = 0; i < _matrixNum * _matrixNum - _prompt; i++)
             {
                 DigHole();
-                if (i>45)
+                if (i>48)
                 {
                     Console.WriteLine("DigHole Times: " + i);
                 }
@@ -157,18 +158,18 @@ namespace Sudoku
                 randomItemValue = 0;
                 _isHoleMatrix[rowIndex][colIndex] = true;
             }
-            //if (!JudgeSukokuHasOnlySolution())
-            var solveSudoku = new SolveSudoku(this);
-            if (!solveSudoku.SudokuIsSolved)
+            if (!JudgeSukokuHasOnlySolution())
             {
-                solveSudoku = null;
-                DeepCopy(_sudokuMatrix, _sudokuMatrixRollBack);
-                DigHole();
+                Init();
+                //CreateRandomClosingStage();
+                //DeepCopy(_sudokuMatrix, _sudokuMatrixRollBack);
+                //DigHole();
+                Console.WriteLine(debugNum++);
             }
             else
             {
                 DeepCopy(_sudokuMatrixRollBack, _sudokuMatrix);
-                solveSudoku = null;
+                _solveSudoku = null;
             }
         }
         /// <summary>
